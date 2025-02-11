@@ -23,6 +23,20 @@ c) only the Surgery wards
 
 -- Write the SQL statement here
 
+select  PatientId
+,AdmittedDate
+,DischargeDate
+,Hospital
+,Ward
+,DATEDIFF(day, ps.AdmittedDate, ps.DischargeDate)+1 AS LengthOfStay
+,DATEADD(week, -2, ps.AdmittedDate) as ReminderDate
+from PatientStay ps
+where ps.Hospital in ('Oxleas', 'PRUH')
+and ps.Ward like '%surgery'
+and year([AdmittedDate]) = '2024' and month([AdmittedDate]) = '02'
+order by ps.AdmittedDate DESC, ps.patientID DESC
+
+
 
 /*
 5. How many patients has each hospital admitted? 
@@ -32,4 +46,28 @@ c) only the Surgery wards
 */
 
 -- Write the SQL statement here
+
+SELECT 
+ps.Hospital
+,count(*) as NumberOfPatients
+,SUM(ps.Tariff) as TotalTariff
+FROM 	PatientStay ps
+group by ps.Hospital
+HAVING COUNT(*) > 10
+ORDER BY NumberOfPatients DESC
+
+-------------------------------------------------------
+select * from DimHospitalBad
+select * from PatientStay
+
+
+SELECT 
+ps.PatientId
+,ps.AdmittedDate
+,h.Type
+,h.Hospital
+FROM PatientStay ps 
+LEFT JOIN DimHospitalBad h ON ps.Hospital = h.Hospital
+WHERE h.[Type] = 'Teaching'
+OR h.[Type] IS NULL
 
